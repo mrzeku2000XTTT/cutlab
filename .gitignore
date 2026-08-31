@@ -11,6 +11,7 @@ renders/
 tmp/
 .cutlab-export/
 cutlab-out/
+work/
 .hyperframes/
 vendor/
 FORKS.local.md

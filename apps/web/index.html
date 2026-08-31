@@ -3,72 +3,89 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cutlab pipeline</title>
-  <style>
-    :root { --bg:#0b0d12; --panel:#141821; --line:#2a3140; --gold:#e8c36a; --text:#e8ecf4; --muted:#8b95a8; --ok:#6ee7a8; --bad:#f07178; }
-    * { box-sizing: border-box; }
-    body { margin: 0; font: 15px/1.5 ui-sans-serif, system-ui, sans-serif; background: var(--bg); color: var(--text); }
-    main { max-width: 860px; margin: 0 auto; padding: 40px 20px 80px; }
-    h1 { font-size: 32px; margin: 0 0 8px; }
-    .muted { color: var(--muted); }
-    label { display: block; margin: 16px 0 6px; color: var(--muted); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
-    input, textarea { width: 100%; background: #0a0c10; color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font: inherit; }
-    textarea { min-height: 120px; font-family: ui-monospace, Consolas, monospace; font-size: 12px; }
-    .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
-    button { background: var(--gold); color: #111; border: 0; border-radius: 10px; padding: 10px 14px; font-weight: 700; cursor: pointer; }
-    button.ghost { background: transparent; color: var(--text); border: 1px solid var(--line); }
-    pre { background: #0a0c10; border: 1px solid var(--line); border-radius: 12px; padding: 14px; overflow: auto; font-size: 12px; min-height: 180px; }
-    .ok { color: var(--ok); } .bad { color: var(--bad); }
-  </style>
+  <title>Cutlab — AI video editor</title>
+  <link rel="stylesheet" href="/css/app.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect fill='%230b0d12' width='64' height='64' rx='12'/><path fill='%23e8c36a' d='M12 40V24l16 8-16 8zm22-16h4v24h-4zm8 4h4v16h-4zm8 4h4v8h-4z'/></svg>" />
 </head>
 <body>
-  <main>
-    <h1>Cutlab</h1>
-    <p class="muted">Local pipeline. HyperFrames / Whisper captions, FFmpeg viral highlights, H.264+AAC export. Paste an absolute path — this machine already has ffmpeg.</p>
-    <label>Video path</label>
-    <input id="file" placeholder="C:\Users\you\Desktop\clip.mp4" />
-    <div class="row">
-      <button data-cmd="captions">Auto captions</button>
-      <button data-cmd="highlights">Viral highlights</button>
-      <button data-cmd="pipeline">Captions + highlights + clips</button>
-      <button class="ghost" data-cmd="shaders">List shaders</button>
-      <button class="ghost" data-cmd="probe">Probe</button>
+  <div class="app">
+    <header class="top">
+      <div class="brand">
+        <svg width="22" height="22" viewBox="0 0 64 64" aria-hidden="true"><rect fill="#0b0d12" width="64" height="64" rx="12"/><path fill="#e8c36a" d="M12 40V24l16 8-16 8zm22-16h4v24h-4zm8 4h4v16h-4zm8 4h4v8h-4z"/></svg>
+        CUTLAB
+      </div>
+      <div class="sep"></div>
+      <button class="btn" id="import">Import</button>
+      <input id="file" type="file" accept="video/*,audio/*" />
+      <button class="btn icon ghost" id="play" title="Space">▶</button>
+      <div class="tc" id="tc">00:00:00</div>
+      <div class="grow"></div>
+      <span class="status" id="status">No clip</span>
+      <button class="btn ghost" id="captions">Auto captions</button>
+      <button class="btn ghost" id="highlights">Viral highlights</button>
+      <button class="btn ghost" id="clips">Cut clips</button>
+      <button class="btn" id="export">Export MP4</button>
+    </header>
+
+    <div class="workspace">
+      <aside class="col">
+        <div class="hd">Media · overlays</div>
+        <div class="media-list" id="bin"></div>
+      </aside>
+
+      <section class="col stage-wrap">
+        <div class="stage">
+          <div class="frame" id="frame">
+            <div class="empty" id="empty">Import a video. Cutlab owns the timeline. HyperFrames is only the motion overlay engine.</div>
+            <video id="preview" playsinline></video>
+            <iframe id="overlay" class="hidden" title="Cutlab overlay"></iframe>
+            <div class="caption-layer"><div id="cue" class="cue hidden"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="col">
+        <div class="hd">AI</div>
+        <div class="ai-actions">
+          <button class="btn ghost" data-p="add captions">Captions</button>
+          <button class="btn ghost" data-p="find highlights">Highlights</button>
+          <button class="btn ghost" data-p="add title sting">Title sting</button>
+          <button class="btn ghost" data-p="export mp4">Export</button>
+        </div>
+        <div class="ai-log" id="log"></div>
+        <div class="prompt">
+          <input id="prompt" placeholder="add captions · find highlights · export" />
+          <button class="btn" id="go">Go</button>
+        </div>
+      </aside>
     </div>
-    <label>Log</label>
-    <pre id="log">idle</pre>
-  </main>
+
+    <footer class="timeline">
+      <div class="ruler" id="ruler">
+        <div id="ruler-inner" style="margin-left:88px;position:relative;height:100%">
+          <div class="ticks" id="ticks"></div>
+        </div>
+      </div>
+      <div class="tracks" id="tracks">
+        <div class="playhead" id="playhead"></div>
+        <div class="track"><label>V1</label><div class="lane" id="lane-v"></div></div>
+        <div class="track"><label>Captions</label><div class="lane" id="lane-c"></div></div>
+        <div class="track"><label>Motion</label><div class="lane" id="lane-g"></div></div>
+        <div class="track"><label>Hits</label><div class="lane" id="lane-h"></div></div>
+      </div>
+    </footer>
+  </div>
+  <script type="module" src="/js/app.js"></script>
   <script>
-    const log = document.getElementById("log");
-    const file = document.getElementById("file");
-    async function post(path, body) {
-      const res = await fetch(path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || res.statusText);
-      return json;
-    }
-    async function run(cmd) {
-      const p = file.value.trim();
-      log.textContent = "running " + cmd + "…";
-      try {
-        let out;
-        if (cmd === "shaders") out = await fetch("/api/shaders").then((r) => r.json());
-        else if (cmd === "probe") out = await post("/api/probe", { file: p });
-        else if (cmd === "captions") out = await post("/api/captions", { file: p });
-        else if (cmd === "highlights") out = await post("/api/highlights", { file: p });
-        else if (cmd === "pipeline") {
-          const cap = await post("/api/captions", { file: p });
-          const hi = await post("/api/highlights", { file: p });
-          const clips = await post("/api/clips", { file: p, from: hi.path });
-          out = { captions: cap, highlights: hi, clips };
-        }
-        log.className = "ok";
-        log.textContent = JSON.stringify(out, null, 2);
-      } catch (err) {
-        log.className = "bad";
-        log.textContent = String(err.message || err);
-      }
-    }
-    document.querySelectorAll("button[data-cmd]").forEach((b) => b.addEventListener("click", () => run(b.dataset.cmd)));
+    document.querySelectorAll(".ai-actions [data-p]").forEach((b) => {
+      b.addEventListener("click", () => {
+        document.getElementById("prompt").value = b.dataset.p;
+        document.getElementById("go").click();
+      });
+    });
+    const empty = document.getElementById("empty");
+    const preview = document.getElementById("preview");
+    preview.addEventListener("loadeddata", () => empty.classList.add("hidden"));
   </script>
 </body>
 </html>

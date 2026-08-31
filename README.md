@@ -48,9 +48,16 @@ npm run check
 npm run dev
 ```
 
-## Site
+## The app (this is Cutlab, not HyperFrames Studio)
 
-Open `index.html`, or `npx --yes serve .`
+```powershell
+cd C:\Users\mrzek\cutlab
+npm run dev
+```
+
+Open **http://127.0.0.1:4174** — our editor: import, timeline, auto captions, viral highlights, motion overlays, Export MP4.
+
+HyperFrames is the overlay/render engine on the Motion track. You never have to open HyperFrames Studio.
 
 ## License
 

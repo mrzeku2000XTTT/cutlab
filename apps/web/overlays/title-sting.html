@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #0b0d12; }
+      #root { position: relative; width: 1920px; height: 1080px; transform-origin: 0 0; }
+      .fill { position: absolute; inset: 0; background: #0b0d12; }
+      .gold-bar { position: absolute; left: 160px; top: 508px; width: 1600px; height: 4px; background: #e8c36a; transform-origin: 0% 50%; }
+      .word { position: absolute; left: 160px; top: 340px; margin: 0; font: 900 164px/1 "Segoe UI", sans-serif; letter-spacing: .04em; color: #e8ecf4; }
+      .sub { position: absolute; left: 160px; top: 540px; margin: 0; font: 36px/1.2 "Segoe UI", sans-serif; letter-spacing: .18em; text-transform: uppercase; color: #e8c36a; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="title-sting" data-start="0" data-duration="4" data-width="1920" data-height="1080">
+      <section id="title-sting-scene" class="clip" data-start="0" data-duration="4" data-track-index="1">
+        <div class="fill"></div>
+        <div id="title-bar" class="gold-bar"></div>
+        <h1 id="title-word" class="word">CUTLAB</h1>
+        <p id="title-sub" class="sub">Our editor · FFmpeg · AI</p>
+      </section>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#title-word", { y: 90, opacity: 0, scale: 0.84 }, { y: 0, opacity: 1, scale: 1, duration: 0.7, ease: "back.out(1.7)" }, 0.12);
+      tl.fromTo("#title-bar", { scaleX: 0 }, { scaleX: 1, duration: 0.55, ease: "power3.out" }, 0.4);
+      tl.fromTo("#title-sub", { y: 28, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 0.55);
+      window.__timelines["title-sting"] = tl;
+      function fit() {
+        const s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+        document.getElementById("root").style.transform = "scale(" + s + ")";
+      }
+      fit();
+      window.addEventListener("resize", fit);
+      window.addEventListener("message", (e) => {
+        if (e.data && e.data.type === "cutlab-seek") {
+          tl.time(Number(e.data.t) || 0);
+          tl.pause();
+        }
+      });
+      window.parent && window.parent.postMessage({ type: "cutlab-overlay-ready", id: "title-sting" }, "*");
+    </script>
+  </body>
+</html>

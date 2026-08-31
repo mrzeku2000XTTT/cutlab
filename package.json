@@ -12,8 +12,8 @@
     "export": "node packages/pipeline/src/cli.mjs export",
     "doctor": "node packages/pipeline/src/cli.mjs doctor",
     "dev": "node packages/pipeline/src/server.mjs",
+    "start": "node packages/pipeline/src/server.mjs",
     "motion:check": "npm --prefix packages/motion run check",
-    "motion:preview": "npm --prefix packages/motion run dev",
     "motion:render": "npm --prefix packages/motion run render",
     "vendor": "powershell -File scripts/vendor.ps1",
     "fork": "powershell -File scripts/login-and-fork.ps1"

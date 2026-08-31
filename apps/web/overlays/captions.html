@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: transparent; }
+      #root { position: relative; width: 1920px; height: 1080px; transform-origin: 0 0; }
+      .kicker { position: absolute; left: 160px; top: 220px; margin: 0; font: 22px/1 "Segoe UI", sans-serif; letter-spacing: .22em; text-transform: uppercase; color: #e8c36a; }
+      .line { position: absolute; left: 160px; right: 160px; top: 300px; margin: 0; font: 800 64px/1.15 "Segoe UI", sans-serif; color: #e8ecf4; }
+      .pill { position: absolute; left: 160px; bottom: 120px; padding: 18px 28px; border-radius: 16px; background: rgba(11,13,18,.88); border: 1px solid #3d3420; font: 700 36px/1.2 "Segoe UI", sans-serif; color: #e8c36a; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="captions-overlay" data-start="0" data-duration="3" data-width="1920" data-height="1080">
+      <section id="caption-scene" class="clip" data-start="0" data-duration="3" data-track-index="1">
+        <p id="cap-kicker" class="kicker">Auto captions</p>
+        <h2 id="cap-line" class="line">Captions live on Cutlab’s timeline — burned with FFmpeg, not a screenshot.</h2>
+        <div id="cap-pill" class="pill">same JSON the agent edits</div>
+      </section>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#cap-kicker", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: "power3.out" }, 0.08);
+      tl.fromTo("#cap-line", { y: 36, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 0.18);
+      tl.fromTo("#cap-pill", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "back.out(1.4)" }, 0.55);
+      window.__timelines["captions-overlay"] = tl;
+      function fit() {
+        const s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+        document.getElementById("root").style.transform = "scale(" + s + ")";
+      }
+      fit();
+      window.addEventListener("resize", fit);
+      window.addEventListener("message", (e) => {
+        if (e.data && e.data.type === "cutlab-seek") { tl.time(Number(e.data.t) || 0); tl.pause(); }
+      });
+      window.parent && window.parent.postMessage({ type: "cutlab-overlay-ready", id: "captions" }, "*");
+    </script>
+  </body>
+</html>

@@ -12,6 +12,38 @@ function srtTime(seconds) {
   return `${pad(h)}:${pad(m)}:${pad(sec)},${pad(ms, 3)}`;
 }
 
+export function srtToSec(stamp) {
+  const clean = String(stamp).trim().replace(",", ".");
+  const [hms, frac = "0"] = clean.split(".");
+  const [h, m, s] = hms.split(":").map(Number);
+  const ms = Number(`0.${frac}`);
+  return h * 3600 + m * 60 + s + ms;
+}
+
+export function parseSrt(srt) {
+  const blocks = String(srt || "")
+    .replace(/^\uFEFF/, "")
+    .trim()
+    .split(/\r?\n\r?\n/);
+  const cues = [];
+  for (const block of blocks) {
+    const lines = block.split(/\r?\n/).filter((l) => l.length);
+    const time = lines.find((l) => l.includes("-->"));
+    if (!time) continue;
+    const [a, b] = time.split("-->").map((x) => x.trim());
+    const text = lines.slice(lines.indexOf(time) + 1).join(" ").trim();
+    if (!text) continue;
+    cues.push({ start: srtToSec(a), end: srtToSec(b), text });
+  }
+  return cues;
+}
+
+export function cuesToSrt(cues) {
+  return (cues || [])
+    .map((c, i) => `${i + 1}\n${srtTime(c.start)} --> ${srtTime(c.end)}\n${c.text}\n`)
+    .join("\n");
+}
+
 export function wordsToSrt(words) {
   const cues = [];
   let buf = [];
@@ -115,11 +147,23 @@ export async function captions(input, opts = {}) {
       await writeFile(result.srtPath, wordsToSrt(result.words), "utf8");
     }
   }
+  let cues = [];
+  try {
+    cues = parseSrt(await readFile(result.srtPath, "utf8"));
+  } catch {
+    cues = [];
+  }
+  if (!cues.length && result.words.length) {
+    const srt = wordsToSrt(result.words);
+    await writeFile(result.srtPath, srt, "utf8");
+    cues = parseSrt(srt);
+  }
   return {
     srt: result.srtPath,
     words: path.join(outDir, "words.json"),
     engine: result.engine,
-    count: result.words.length,
+    count: cues.length || result.words.length,
+    cues,
   };
 }
 
