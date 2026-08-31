@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cutlab — open AI video editor map</title>
+  <meta name="description" content="Open-source AI video editors with a real timeline and real MP4 export. Includes Chinese WebAV / 剪映-draft repos." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect fill='%230b0d12' width='64' height='64' rx='12'/><path fill='%23e8c36a' d='M12 40V24l16 8-16 8zm22-16h4v24h-4zm8 4h4v16h-4zm8 4h4v8h-4z'/></svg>" />
+  <style>
+    :root {
+      --bg: #0b0d12;
+      --panel: #141821;
+      --line: #2a3140;
+      --gold: #e8c36a;
+      --text: #e8ecf4;
+      --muted: #8b95a8;
+      --ok: #6ee7a8;
+      --warn: #f0a35a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 16px/1.5 ui-sans-serif, system-ui, sans-serif;
+      background: radial-gradient(1200px 600px at 10% -10%, #1a2233 0%, var(--bg) 50%);
+      color: var(--text);
+    }
+    a { color: var(--gold); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    header {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 48px 24px 24px;
+    }
+    .pill {
+      display: inline-block;
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid #3d3420;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+    h1 { font-size: clamp(32px, 5vw, 52px); line-height: 1.1; margin: 16px 0 12px; }
+    .lead { color: var(--muted); max-width: 640px; }
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+    .btn {
+      background: var(--gold);
+      color: #111;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+    .btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--line); }
+    main { max-width: 980px; margin: 0 auto; padding: 0 24px 80px; }
+    section { margin-top: 48px; }
+    h2 { font-size: 22px; margin: 0 0 16px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { color: var(--muted); font-weight: 600; }
+    .ok { color: var(--ok); }
+    .warn { color: var(--warn); }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 20px;
+      margin: 12px 0;
+    }
+    pre {
+      background: #0a0c10;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 13px;
+    }
+    footer { color: var(--muted); font-size: 13px; margin-top: 64px; }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="pill">Open source · timeline · real MP4</span>
+    <h1>Cutlab</h1>
+    <p class="lead">A map of video editors that actually have a timeline <em>and</em> write a playable MP4. Plus the Chinese WebAV / 剪映-draft stack. This is the starting repo for an open AI NLE — not a fake export button.</p>
+    <div class="actions">
+      <a class="btn" href="https://github.com/x777/frontstage">Best fork: Frontstage</a>
+      <a class="btn ghost" href="REPOS.md">All repos</a>
+      <a class="btn ghost" href="ARCHITECTURE.md">Architecture</a>
+    </div>
+  </header>
+  <main>
+    <section>
+      <h2>Rule</h2>
+      <div class="card">
+        Preview and export must read the <strong>same timeline JSON</strong>. Export is FFmpeg or WebCodecs+mp4box. <code>canvas.captureStream()</code> is not an editor.
+      </div>
+    </section>
+    <section>
+      <h2>Start here (working)</h2>
+      <table>
+        <thead><tr><th>Repo</th><th>Timeline</th><th>MP4</th><th>AI</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><a href="https://github.com/x777/frontstage">frontstage</a></td>
+            <td>Multi-track, razor, keyframes</td>
+            <td class="ok">ffmpeg mux</td>
+            <td>Agent + MCP + Whisper</td>
+          </tr>
+          <tr>
+            <td><a href="https://github.com/0xsline/OpenChatCut">OpenChatCut</a></td>
+            <td>Multi-track, ripple</td>
+            <td class="ok">Remotion → MP4</td>
+            <td>Chat agent, Skills</td>
+          </tr>
+          <tr>
+            <td><a href="https://github.com/OpenCut-app/opencut-classic">OpenCut classic</a></td>
+            <td>CapCut-like</td>
+            <td class="warn">WebCodecs (AAC flaky on some browsers)</td>
+            <td>Limited; main repo is a rewrite</td>
+          </tr>
+          <tr>
+            <td><a href="https://github.com/WebAV-Tech/WebAV">WebAV</a> + <a href="https://github.com/Li-vien/CcClip">CcClip</a></td>
+            <td>Vue multi-track / SDK sprites</td>
+            <td class="ok">WebCodecs Combinator MP4</td>
+            <td>SDK, not a full agent</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+    <section>
+      <h2>Chinese stack</h2>
+      <div class="card">
+        <p><strong>Independent renderer:</strong> <a href="https://github.com/WebAV-Tech/WebAV">WebAV</a> (风痕), <a href="https://github.com/caohongz/yifang-clip">一方云剪</a>, <a href="https://github.com/hughfenghen/dimcut">Dimcut</a>, <a href="https://github.com/Li-vien/CcClip">CcClip</a>.</p>
+        <p><strong>剪映 drafts (Jianying exports the file):</strong> <a href="https://github.com/aoguai/pyJianYingDraft">pyJianYingDraft</a>, <a href="https://github.com/isYangs/jianying-editor-skill">jianying-editor-skill</a>, <a href="https://github.com/ArcReel/ArcReel">ArcReel</a>, VectCutAPI.</p>
+        <p><strong>AI clip, not a full NLE:</strong> <a href="https://github.com/xixihhhh/hotclip">HotClip</a>, <a href="https://github.com/GML-MMGroup/ClipTalk">ClipTalk</a>.</p>
+      </div>
+    </section>
+    <section>
+      <h2>Export command we will always test</h2>
+      <pre>ffmpeg -y -framerate 30 -i frames/%06d.png -i mix.wav \
+  -c:v libx264 -pix_fmt yuv420p -crf 18 \
+  -c:a aac -b:a 192k -movflags +faststart out.mp4
+ffprobe -hide_banner out.mp4
+# then open in VLC</pre>
+    </section>
+    <footer>
+      Cutlab · MIT · see <a href="REPOS.md">REPOS.md</a>. Push with <code>gh repo create cutlab --public --source=. --push</code> after <code>gh auth login</code>.
+    </footer>
+  </main>
+</body>
+</html>
