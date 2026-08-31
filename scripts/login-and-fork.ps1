@@ -16,7 +16,7 @@ if (-not $user) { throw "Could not read GitHub login" }
 Write-Host "Logged in as $user"
 
 $desc = "Open-source AI video editor: HyperFrames + Remotion + FFmpeg. Auto captions, viral highlights, real MP4."
-$existing = gh repo view "$user/cutlab" 2>$null
+gh repo view "$user/cutlab" 2>$null | Out-Null
 if ($LASTEXITCODE -ne 0) {
   Write-Host "Creating $user/cutlab"
   gh repo create cutlab --public --source=. --remote=origin --description $desc --push
