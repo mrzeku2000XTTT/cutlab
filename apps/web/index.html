@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cutlab pipeline</title>
+  <style>
+    :root { --bg:#0b0d12; --panel:#141821; --line:#2a3140; --gold:#e8c36a; --text:#e8ecf4; --muted:#8b95a8; --ok:#6ee7a8; --bad:#f07178; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 15px/1.5 ui-sans-serif, system-ui, sans-serif; background: var(--bg); color: var(--text); }
+    main { max-width: 860px; margin: 0 auto; padding: 40px 20px 80px; }
+    h1 { font-size: 32px; margin: 0 0 8px; }
+    .muted { color: var(--muted); }
+    label { display: block; margin: 16px 0 6px; color: var(--muted); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+    input, textarea { width: 100%; background: #0a0c10; color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font: inherit; }
+    textarea { min-height: 120px; font-family: ui-monospace, Consolas, monospace; font-size: 12px; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+    button { background: var(--gold); color: #111; border: 0; border-radius: 10px; padding: 10px 14px; font-weight: 700; cursor: pointer; }
+    button.ghost { background: transparent; color: var(--text); border: 1px solid var(--line); }
+    pre { background: #0a0c10; border: 1px solid var(--line); border-radius: 12px; padding: 14px; overflow: auto; font-size: 12px; min-height: 180px; }
+    .ok { color: var(--ok); } .bad { color: var(--bad); }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Cutlab</h1>
+    <p class="muted">Local pipeline. HyperFrames / Whisper captions, FFmpeg viral highlights, H.264+AAC export. Paste an absolute path — this machine already has ffmpeg.</p>
+    <label>Video path</label>
+    <input id="file" placeholder="C:\Users\you\Desktop\clip.mp4" />
+    <div class="row">
+      <button data-cmd="captions">Auto captions</button>
+      <button data-cmd="highlights">Viral highlights</button>
+      <button data-cmd="pipeline">Captions + highlights + clips</button>
+      <button class="ghost" data-cmd="shaders">List shaders</button>
+      <button class="ghost" data-cmd="probe">Probe</button>
+    </div>
+    <label>Log</label>
+    <pre id="log">idle</pre>
+  </main>
+  <script>
+    const log = document.getElementById("log");
+    const file = document.getElementById("file");
+    async function post(path, body) {
+      const res = await fetch(path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || res.statusText);
+      return json;
+    }
+    async function run(cmd) {
+      const p = file.value.trim();
+      log.textContent = "running " + cmd + "…";
+      try {
+        let out;
+        if (cmd === "shaders") out = await fetch("/api/shaders").then((r) => r.json());
+        else if (cmd === "probe") out = await post("/api/probe", { file: p });
+        else if (cmd === "captions") out = await post("/api/captions", { file: p });
+        else if (cmd === "highlights") out = await post("/api/highlights", { file: p });
+        else if (cmd === "pipeline") {
+          const cap = await post("/api/captions", { file: p });
+          const hi = await post("/api/highlights", { file: p });
+          const clips = await post("/api/clips", { file: p, from: hi.path });
+          out = { captions: cap, highlights: hi, clips };
+        }
+        log.className = "ok";
+        log.textContent = JSON.stringify(out, null, 2);
+      } catch (err) {
+        log.className = "bad";
+        log.textContent = String(err.message || err);
+      }
+    }
+    document.querySelectorAll("button[data-cmd]").forEach((b) => b.addEventListener("click", () => run(b.dataset.cmd)));
+  </script>
+</body>
+</html>

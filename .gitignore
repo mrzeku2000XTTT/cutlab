@@ -4,4 +4,15 @@ node_modules/
 dist/
 *.mp4
 *.mov
+*.wav
+*.srt
 frames/
+renders/
+tmp/
+.cutlab-export/
+cutlab-out/
+.hyperframes/
+vendor/
+FORKS.local.md
+packages/motion/out/
+packages/motion/*.mp4

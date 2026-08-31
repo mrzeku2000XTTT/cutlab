@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cutlab — open AI video editor map</title>
-  <meta name="description" content="Open-source AI video editors with a real timeline and real MP4 export. Includes Chinese WebAV / 剪映-draft repos." />
+  <title>Cutlab — open AI video editor</title>
+  <meta name="description" content="Open-source AI video editor: HyperFrames, Remotion, real FFmpeg. Auto captions, viral highlights, shaders, playable H.264 MP4." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect fill='%230b0d12' width='64' height='64' rx='12'/><path fill='%23e8c36a' d='M12 40V24l16 8-16 8zm22-16h4v24h-4zm8 4h4v16h-4zm8 4h4v8h-4z'/></svg>" />
   <style>
     :root {
@@ -26,11 +26,7 @@
     }
     a { color: var(--gold); text-decoration: none; }
     a:hover { text-decoration: underline; }
-    header {
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 48px 24px 24px;
-    }
+    header { max-width: 980px; margin: 0 auto; padding: 48px 24px 24px; }
     .pill {
       display: inline-block;
       font-size: 12px;
@@ -42,7 +38,7 @@
       border-radius: 999px;
     }
     h1 { font-size: clamp(32px, 5vw, 52px); line-height: 1.1; margin: 16px 0 12px; }
-    .lead { color: var(--muted); max-width: 640px; }
+    .lead { color: var(--muted); max-width: 680px; }
     .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
     .btn {
       background: var(--gold);
@@ -80,72 +76,88 @@
 </head>
 <body>
   <header>
-    <span class="pill">Open source · timeline · real MP4</span>
+    <span class="pill">HyperFrames · Remotion · FFmpeg · shaders</span>
     <h1>Cutlab</h1>
-    <p class="lead">A map of video editors that actually have a timeline <em>and</em> write a playable MP4. Plus the Chinese WebAV / 剪映-draft stack. This is the starting repo for an open AI NLE — not a fake export button.</p>
+    <p class="lead">Open AI video editor. Auto captions, viral highlights, motion graphics, GLSL. Export is a real H.264/AAC MP4 — same timeline JSON the agent edits. You log in. We fork the engines.</p>
     <div class="actions">
-      <a class="btn" href="https://github.com/x777/frontstage">Best fork: Frontstage</a>
-      <a class="btn ghost" href="REPOS.md">All repos</a>
+      <a class="btn" href="FORK.md">You login. We fork.</a>
+      <a class="btn ghost" href="packages/pipeline/README.md">Pipeline CLI</a>
       <a class="btn ghost" href="ARCHITECTURE.md">Architecture</a>
+      <a class="btn ghost" href="REPOS.md">Repos</a>
     </div>
   </header>
   <main>
     <section>
       <h2>Rule</h2>
       <div class="card">
-        Preview and export must read the <strong>same timeline JSON</strong>. Export is FFmpeg or WebCodecs+mp4box. <code>canvas.captureStream()</code> is not an editor.
+        Preview and export read the <strong>same timeline JSON</strong>. Export is FFmpeg, Remotion, or WebCodecs+mp4box. <code>canvas.captureStream()</code> is not an editor.
       </div>
     </section>
     <section>
-      <h2>Start here (working)</h2>
+      <h2>Working now (this repo)</h2>
       <table>
-        <thead><tr><th>Repo</th><th>Timeline</th><th>MP4</th><th>AI</th></tr></thead>
+        <thead><tr><th>Piece</th><th>What it is</th><th>MP4</th></tr></thead>
         <tbody>
           <tr>
-            <td><a href="https://github.com/x777/frontstage">frontstage</a></td>
-            <td>Multi-track, razor, keyframes</td>
-            <td class="ok">ffmpeg mux</td>
-            <td>Agent + MCP + Whisper</td>
+            <td>HyperFrames pack</td>
+            <td><code>packages/motion</code> — title sting, caption overlay, WebGL highlight hit</td>
+            <td class="ok">hyperframes render → ffmpeg</td>
           </tr>
           <tr>
-            <td><a href="https://github.com/0xsline/OpenChatCut">OpenChatCut</a></td>
-            <td>Multi-track, ripple</td>
-            <td class="ok">Remotion → MP4</td>
-            <td>Chat agent, Skills</td>
+            <td>Pipeline CLI</td>
+            <td><code>packages/pipeline</code> — captions, highlights, clips, burn, mux</td>
+            <td class="ok">libx264 + AAC +faststart</td>
           </tr>
           <tr>
-            <td><a href="https://github.com/OpenCut-app/opencut-classic">OpenCut classic</a></td>
-            <td>CapCut-like</td>
-            <td class="warn">WebCodecs (AAC flaky on some browsers)</td>
-            <td>Limited; main repo is a rewrite</td>
-          </tr>
-          <tr>
-            <td><a href="https://github.com/WebAV-Tech/WebAV">WebAV</a> + <a href="https://github.com/Li-vien/CcClip">CcClip</a></td>
-            <td>Vue multi-track / SDK sprites</td>
-            <td class="ok">WebCodecs Combinator MP4</td>
-            <td>SDK, not a full agent</td>
+            <td>Local UI</td>
+            <td><code>npm run dev</code> → http://127.0.0.1:4174</td>
+            <td class="ok">calls the CLI</td>
           </tr>
         </tbody>
       </table>
     </section>
     <section>
-      <h2>Chinese stack</h2>
-      <div class="card">
-        <p><strong>Independent renderer:</strong> <a href="https://github.com/WebAV-Tech/WebAV">WebAV</a> (风痕), <a href="https://github.com/caohongz/yifang-clip">一方云剪</a>, <a href="https://github.com/hughfenghen/dimcut">Dimcut</a>, <a href="https://github.com/Li-vien/CcClip">CcClip</a>.</p>
-        <p><strong>剪映 drafts (Jianying exports the file):</strong> <a href="https://github.com/aoguai/pyJianYingDraft">pyJianYingDraft</a>, <a href="https://github.com/isYangs/jianying-editor-skill">jianying-editor-skill</a>, <a href="https://github.com/ArcReel/ArcReel">ArcReel</a>, VectCutAPI.</p>
-        <p><strong>AI clip, not a full NLE:</strong> <a href="https://github.com/xixihhhh/hotclip">HotClip</a>, <a href="https://github.com/GML-MMGroup/ClipTalk">ClipTalk</a>.</p>
-      </div>
+      <h2>Forks after login</h2>
+      <table>
+        <thead><tr><th>Upstream</th><th>Timeline</th><th>MP4</th><th>AI</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><a href="https://github.com/x777/frontstage">frontstage</a> GPL-3</td>
+            <td>Multi-track, razor, keyframes</td>
+            <td class="ok">ffmpeg mux</td>
+            <td>Agent + MCP + Whisper</td>
+          </tr>
+          <tr>
+            <td><a href="https://github.com/0xsline/OpenChatCut">OpenChatCut</a> AGPL</td>
+            <td>Multi-track, ripple, ~67 GLSL shaders</td>
+            <td class="ok">Remotion → MP4</td>
+            <td>Chat agent, native ASR</td>
+          </tr>
+          <tr>
+            <td><a href="https://github.com/WebAV-Tech/WebAV">WebAV</a> MIT</td>
+            <td>Sprites / combinator</td>
+            <td class="ok">WebCodecs Combinator</td>
+            <td>SDK</td>
+          </tr>
+        </tbody>
+      </table>
     </section>
     <section>
-      <h2>Export command we will always test</h2>
-      <pre>ffmpeg -y -framerate 30 -i frames/%06d.png -i mix.wav \
-  -c:v libx264 -pix_fmt yuv420p -crf 18 \
-  -c:a aac -b:a 192k -movflags +faststart out.mp4
-ffprobe -hide_banner out.mp4
-# then open in VLC</pre>
+      <h2>You login. Cutlab forks.</h2>
+      <pre>gh auth login -h github.com -p https -w
+cd C:\Users\mrzek\cutlab
+.\scripts\login-and-fork.ps1</pre>
+      <div class="card">That creates <code>cutlab</code> on your GitHub and forks Frontstage, OpenChatCut, and WebAV. Vendor trees stay local (too big for the MIT repo). Licenses stay GPL / AGPL / MIT — we do not relicense.</div>
+    </section>
+    <section>
+      <h2>Pipeline we always test</h2>
+      <pre>npm run doctor
+node packages/pipeline/src/cli.mjs pipeline take.mp4
+ffmpeg -hide_banner -i cutlab-out/clips/h1.mp4
+# VLC must play it. If it only plays in &lt;video&gt;, it is not done.</pre>
     </section>
     <footer>
-      Cutlab · MIT · see <a href="REPOS.md">REPOS.md</a>. Push with <code>gh repo create cutlab --public --source=. --push</code> after <code>gh auth login</code>.
+      Cutlab · MIT · <a href="FORK.md">FORK.md</a> · <a href="REPOS.md">REPOS.md</a>
     </footer>
   </main>
 </body>

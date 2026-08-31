@@ -1,0 +1,13 @@
+{
+  "name": "@cutlab/pipeline",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "cutlab": "./src/cli.mjs"
+  },
+  "scripts": {
+    "cutlab": "node src/cli.mjs",
+    "dev": "node src/server.mjs"
+  }
+}

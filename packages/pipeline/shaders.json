@@ -1,0 +1,12 @@
+{
+  "note": "Catalog of OpenChatCut GLSL (AGPL). Source files live in vendor/openchatcut after scripts/vendor.ps1.",
+  "fx": [
+    "bloom", "camera-shake", "chroma-key", "crt", "duotone", "film-grain",
+    "fisheye", "glitch", "kaleidoscope", "light-leak", "motion-blur",
+    "pixelate", "rgb-split", "vignette", "look-teal-orange", "look-cyber"
+  ],
+  "transitions": [
+    "cross-dissolve", "whip-pan", "glitch-cut", "page-curl", "circle-wipe",
+    "dip-to-black", "impact-shake", "organic-dissolve"
+  ]
+}

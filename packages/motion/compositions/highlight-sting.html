@@ -1,0 +1,141 @@
+<!doctype html>
+<html>
+  <body>
+    <template>
+      <style>
+        #root {
+          position: relative;
+          width: 1920px;
+          height: 1080px;
+          overflow: hidden;
+          color: #e8ecf4;
+        }
+        #fx-canvas {
+          position: absolute;
+          inset: 0;
+          width: 1920px;
+          height: 1080px;
+          display: block;
+        }
+        .label {
+          position: absolute;
+          left: 160px;
+          top: 360px;
+          margin: 0;
+          font-size: 28px;
+          letter-spacing: 0.28em;
+          text-transform: uppercase;
+          color: #e8c36a;
+          will-change: transform, opacity;
+        }
+        .hit {
+          position: absolute;
+          left: 160px;
+          top: 420px;
+          margin: 0;
+          font-size: 140px;
+          font-weight: 900;
+          letter-spacing: 0.02em;
+          line-height: 0.92;
+          will-change: transform, opacity;
+        }
+      </style>
+      <div
+        id="root"
+        data-composition-id="highlight-sting"
+        data-width="1920"
+        data-height="1080"
+        data-duration="3"
+      >
+        <section id="highlight-scene" class="clip" data-start="0" data-duration="3" data-track-index="1">
+          <canvas id="fx-canvas" width="1920" height="1080"></canvas>
+          <p id="hi-label" class="label">Viral highlight</p>
+          <h2 id="hi-hit" class="hit">CLIP IT</h2>
+        </section>
+      </div>
+      <script>
+        window.__timelines = window.__timelines || {};
+        const tl = gsap.timeline({ paused: true });
+        const canvas = document.getElementById("fx-canvas");
+        const gl = canvas.getContext("webgl2", { alpha: false, preserveDrawingBuffer: true });
+        const proxy = { t: 0, slam: 0 };
+
+        if (gl) {
+          const vs = `#version 300 es
+          in vec2 a_pos;
+          out vec2 v_uv;
+          void main() {
+            v_uv = a_pos * 0.5 + 0.5;
+            gl_Position = vec4(a_pos, 0.0, 1.0);
+          }`;
+          const fs = `#version 300 es
+          precision highp float;
+          in vec2 v_uv;
+          out vec4 fragColor;
+          uniform float u_time;
+          float hash(vec2 p) {
+            return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+          }
+          void main() {
+            vec2 uv = v_uv;
+            vec2 c = uv - 0.5;
+            float dist = dot(c, c);
+            uv = uv + c * dist * 0.12;
+            float g = 0.04 + 0.03 * sin(u_time * 2.2 + uv.y * 8.0);
+            vec3 col = vec3(0.04, 0.05, 0.08);
+            col += vec3(0.91, 0.76, 0.42) * (0.12 + 0.08 * sin(uv.x * 18.0 + u_time * 3.0));
+            float scan = sin((uv.y + u_time * 0.15) * 720.0) * 0.045;
+            col -= scan;
+            float vig = 1.0 - dist * 1.8;
+            float noise = hash(uv * 90.0 + u_time) * 0.04;
+            fragColor = vec4(col * vig + noise, 1.0);
+          }`;
+          function sh(type, src) {
+            const s = gl.createShader(type);
+            gl.shaderSource(s, src);
+            gl.compileShader(s);
+            return s;
+          }
+          const prog = gl.createProgram();
+          gl.attachShader(prog, sh(gl.VERTEX_SHADER, vs));
+          gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, fs));
+          gl.linkProgram(prog);
+          gl.useProgram(prog);
+          const buf = gl.createBuffer();
+          gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+          gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+          const loc = gl.getAttribLocation(prog, "a_pos");
+          gl.enableVertexAttribArray(loc);
+          gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+          const uTime = gl.getUniformLocation(prog, "u_time");
+          const draw = () => {
+            gl.viewport(0, 0, 1920, 1080);
+            gl.uniform1f(uTime, proxy.t);
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+          };
+          draw();
+          tl.to(proxy, {
+            t: 3,
+            duration: 3,
+            ease: "none",
+            onUpdate: draw,
+          }, 0);
+        }
+
+        tl.fromTo(
+          "#hi-label",
+          { y: 18, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.35, ease: "power3.out" },
+          0.1,
+        );
+        tl.fromTo(
+          "#hi-hit",
+          { y: 70, opacity: 0, scale: 0.78 },
+          { y: 0, opacity: 1, scale: 1, duration: 0.55, ease: "back.out(1.8)" },
+          0.22,
+        );
+        window.__timelines["highlight-sting"] = tl;
+      </script>
+    </template>
+  </body>
+</html>

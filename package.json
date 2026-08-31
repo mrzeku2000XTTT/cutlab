@@ -1,0 +1,21 @@
+{
+  "name": "cutlab",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Open-source AI video editor: HyperFrames + Remotion + real FFmpeg. Captions, viral highlights, clips.",
+  "type": "module",
+  "scripts": {
+    "pipeline": "node packages/pipeline/src/cli.mjs",
+    "captions": "node packages/pipeline/src/cli.mjs captions",
+    "highlights": "node packages/pipeline/src/cli.mjs highlights",
+    "clips": "node packages/pipeline/src/cli.mjs clips",
+    "export": "node packages/pipeline/src/cli.mjs export",
+    "doctor": "node packages/pipeline/src/cli.mjs doctor",
+    "dev": "node packages/pipeline/src/server.mjs",
+    "motion:check": "npm --prefix packages/motion run check",
+    "motion:preview": "npm --prefix packages/motion run dev",
+    "motion:render": "npm --prefix packages/motion run render",
+    "vendor": "powershell -File scripts/vendor.ps1",
+    "fork": "powershell -File scripts/login-and-fork.ps1"
+  }
+}
